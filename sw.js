@@ -1,92 +1,58 @@
-const CACHE_NAME = "super-lista-v3"; // Versão nova para forçar atualização
+const CACHE_NAME = "super-lista-v4"; // Mude o número da versão sempre que atualizar o app
 
-// Arquivos do próprio app (Essenciais)
-const APP_SHELL = [
+const ASSETS_TO_CACHE = [
+  "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./manifest.json",
-];
-
-// Arquivos externos (CDNs)
-const EXTERNAL_ASSETS = [
   "https://cdn.tailwindcss.com",
-  "https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap",
-  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css",
+  "https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
 ];
 
-// 1. Instalação: Cacheia arquivos locais e tenta os externos sem quebrar
+// Instalação e Cache
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      console.log("Instalando cache...");
-
-      // Passo 1: Cachear arquivos locais (Se falhar, o app não instala)
-      try {
-        await cache.addAll(APP_SHELL);
-      } catch (e) {
-        console.error("Erro crítico ao cachear arquivos locais:", e);
-      }
-
-      // Passo 2: Cachear externos com modo 'no-cors' (para evitar erro de CORS/Vermelho)
-      // Usamos map para tentar um por um, sem travar a instalação se um falhar
-      const externalPromises = EXTERNAL_ASSETS.map(async (url) => {
-        try {
-          // 'no-cors' permite cachear arquivos de outros domínios (CDNs) mesmo sem permissão explícita
-          const request = new Request(url, { mode: "no-cors" });
-          const response = await fetch(request);
-          await cache.put(request, response);
-        } catch (err) {
-          console.warn(
-            "Aviso: Falha ao cachear recurso externo (o app funcionará offline, mas sem estilo se não tiver internet):",
-            url,
-          );
-        }
-      });
-
-      await Promise.all(externalPromises);
-    }),
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
   );
-  self.skipWaiting(); // Ativa imediatamente
+  self.skipWaiting();
 });
 
-// 2. Ativação: Limpa caches antigos (v1, v2, etc)
+// Limpeza de caches antigos
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keyList) => {
+    caches.keys().then((cacheNames) => {
       return Promise.all(
-        keyList.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log("Removendo cache antigo:", key);
-            return caches.delete(key);
+        cacheNames.map((cache) => {
+          if (cache !== CACHE_NAME) {
+            return caches.delete(cache);
           }
-        }),
+        })
       );
-    }),
+    })
   );
   self.clients.claim();
 });
 
-// 3. Interceptação (Fetch): Serve do cache ou baixa
+// Estratégia: Tenta rede, se falhar (offline), usa o cache
 self.addEventListener("fetch", (event) => {
-  // CORREÇÃO CRÍTICA: Ignora extensões do Chrome e outros protocolos não-http
-  // Isso remove o erro "Request scheme 'chrome-extension' is unsupported"
-  if (!event.request.url.startsWith("http")) {
-    return;
-  }
+  if (!event.request.url.startsWith("http")) return;
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      // Se achou no cache, retorna
-      if (cachedResponse) {
-        return cachedResponse;
-      }
-
-      // Se não, busca na rede
-      return fetch(event.request).catch(() => {
-        // Se falhar (offline e sem cache), não faz nada (ou retorna página de erro customizada)
-        // console.log('Offline:', event.request.url);
-      });
-    }),
+    fetch(event.request)
+      .then((response) => {
+        // Se a rede funcionar, atualiza o cache e retorna a resposta
+        const clonaRes = response.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(event.request, clonaRes);
+        });
+        return response;
+      })
+      .catch(() => {
+        // Se a rede falhar (estiver offline), tenta o cache
+        return caches.match(event.request);
+      })
   );
 });
