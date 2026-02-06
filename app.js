@@ -53,7 +53,10 @@ window.addEventListener("appinstalled", () => {
 let selectedNewEmoji = "🛒";
 
 const emojiDatabase = [
-  { icon: "🧴", tags: "desodorante creme shampoo condicionador hidratante loção limpeza" },
+  {
+    icon: "🧴",
+    tags: "desodorante creme shampoo condicionador hidratante loção limpeza",
+  },
   { icon: "🧼", tags: "sabonete sabao banho limpeza maos" },
   { icon: "🪥", tags: "escova dente bucal higiene" },
   { icon: "🦷", tags: "pasta dente bucal" },
@@ -97,7 +100,7 @@ const emojiDatabase = [
   { icon: "🍑", tags: "pessego fruta" },
   { icon: "🥭", tags: "manga fruta" },
   { icon: "🍍", tags: "abacaxi fruta" },
-  { icon: "🥝", tags: "kiwi fruta" },
+  { icon: " kiwi", tags: "kiwi fruta" },
   { icon: "🥑", tags: "abacate avocado fruta" },
   { icon: "🍆", tags: "berinjela legume" },
   { icon: "🥔", tags: "batata legume inglesa" },
@@ -116,9 +119,9 @@ const emojiDatabase = [
   { icon: "🥩", tags: "carne bife vermelho churrasco picanha" },
   { icon: "🍗", tags: "frango coxa carne assado" },
   { icon: "🍖", tags: "carne osso costela" },
-  { icon: "🌭", tags: "salsicha cachorro quente hotdog" },
+  { icon: " hotdog", tags: "salsicha cachorro quente hotdog" },
   { icon: "🍔", tags: "hamburguer carne lanche" },
-  { icon: " Bacon", tags: "bacon carne frito" },
+  { icon: "🥓", tags: "bacon carne frito" },
   { icon: "🍤", tags: "camarao fruto mar peixe" },
   { icon: "🐟", tags: "peixe carne mar" },
   { icon: "🍣", tags: "sushi peixe japones" },
@@ -129,7 +132,7 @@ const emojiDatabase = [
   { icon: "🥨", tags: "pretzel pao salgado" },
   { icon: "🥯", tags: "bagel pao rosquinha" },
   { icon: "🥞", tags: "panqueca cafe" },
-  { icon: " waffle", tags: "waffle cafe" },
+  { icon: "🧇", tags: "waffle cafe" },
   { icon: "🧀", tags: "queijo laticinio mussarela" },
   { icon: "🧈", tags: "manteiga margarina" },
   { icon: "🍚", tags: "arroz comida grao" },
@@ -154,7 +157,7 @@ const emojiDatabase = [
   { icon: "🍨", tags: "sorvete pote sobremesa" },
   { icon: "🍰", tags: "bolo doce festa fatia" },
   { icon: "🎂", tags: "bolo aniversario festa" },
-  { icon: "🧁", tags: "cupcake bolo doce" },
+  { icon: " cupcake", tags: "cupcake bolo doce" },
   { icon: "🥧", tags: "torta doce" },
   { icon: "🍮", tags: "pudim doce sobremesa" },
   { icon: "🍿", tags: "pipoca milho cinema" },
@@ -241,6 +244,7 @@ function router(page) {
   document
     .getElementById(`nav-${page}`)
     .classList.add("active", "text-pink-500");
+
   if (page === "home") {
     headerTotal.classList.add("hidden");
     renderHome(app);
@@ -319,6 +323,7 @@ function renderProductGrid() {
     .join("");
 }
 
+// Função renderCart atualizada com botão de exclusão
 function renderCart(container) {
   const cartIds = Object.keys(cart);
   if (cartIds.length === 0) {
@@ -342,7 +347,9 @@ function renderCart(container) {
                       <span class="text-xl">${item.icon}</span>
                       <span class="font-bold ${cartItem.checked ? "line-through text-gray-400" : "text-gray-700"}">${item.name}</span>
                   </div>
-                  <button onclick="removeFromCart(${id})" class="text-gray-300 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can text-sm"></i></button>
+                  <button onclick="removeFromCart(${id})" class="text-gray-400 hover:text-red-500 p-2 transition-colors">
+                    <i class="fa-solid fa-trash-can"></i>
+                  </button>
               </div>
               <div class="flex items-center gap-3 mt-1 text-sm">
                   <button onclick="changeQty(${id}, -1)" class="w-6 h-6 bg-gray-100 rounded text-gray-600 font-bold">-</button>
@@ -364,6 +371,7 @@ function renderCart(container) {
   updateTotalHeader();
 }
 
+// Função renderHistory atualizada com botão de exclusão
 function renderHistory(container) {
   if (history.length === 0) {
     container.innerHTML = `<div class="text-center p-8 mt-10"><i class="fa-solid fa-clock-rotate-left text-4xl text-gray-300 mb-4"></i><p class="text-gray-500">Nenhuma compra finalizada.</p></div>`;
@@ -385,7 +393,9 @@ function renderHistory(container) {
               </div>
               <div class="flex flex-col items-end gap-2">
                   <span class="font-bold text-green-600 text-lg">${rec.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
-                  <button onclick="deleteHistoryItem(${rec.id})" class="text-red-300 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i> Excluir</button>
+                  <button onclick="deleteHistoryItem(${rec.id})" class="text-red-400 hover:text-red-600 text-sm flex items-center gap-1 transition-colors">
+                    <i class="fa-solid fa-trash"></i> Excluir
+                  </button>
               </div>
           </div>
           <div class="mt-3 border-t pt-3 flex justify-end">
@@ -550,7 +560,6 @@ function filterEmojis() {
     .getElementById("emoji-search-input")
     .value.toLowerCase();
   const grid = document.getElementById("emoji-grid");
-
   const normalize = (str) =>
     str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
   const normalizedQuery = normalize(query);
@@ -586,20 +595,24 @@ function saveNewProduct() {
 // --- NOVAS FUNÇÕES DE EXCLUSÃO ---
 
 function removeFromCart(id) {
-    if(confirm("Remover este item do carrinho?")) {
-        delete cart[id];
-        saveData();
-        renderCart(document.getElementById("app-content"));
-        updateCartBadge();
-    }
+  if (confirm("Remover este item do carrinho?")) {
+    delete cart[id];
+    saveData();
+    renderCart(document.getElementById("app-content"));
+    updateCartBadge();
+  }
 }
 
 function deleteHistoryItem(histId) {
-    if(confirm("Tem certeza que deseja apagar este registro do histórico? Isso não pode ser desfeito.")) {
-        history = history.filter(h => h.id !== histId);
-        saveData();
-        renderHistory(document.getElementById("app-content"));
-    }
+  if (
+    confirm(
+      "Tem certeza que deseja apagar este registro do histórico? Isso não pode ser desfeito.",
+    )
+  ) {
+    history = history.filter((h) => h.id !== histId);
+    saveData();
+    renderHistory(document.getElementById("app-content"));
+  }
 }
 
 init();
