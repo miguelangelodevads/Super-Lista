@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <meta name="theme-color" content="#EC4899" />
+    <meta
+      name="description"
+      content="Sua lista de compras inteligente e fácil."
+    />
+    <title>Super Lista da Dona</title>
+
+    <!-- Link para o Manifesto do PWA -->
+    <link rel="manifest" href="manifest.json" />
+    <link
+      rel="apple-touch-icon"
+      href="https://cdn-icons-png.flaticon.com/512/3081/3081840.png"
+    />
+
+    <!-- Script para silenciar o aviso de produção do Tailwind (Truque para limpar o console) -->
+    <script>
+      const originalWarn = console.warn;
+      console.warn = (...args) => {
+        if (
+          args[0] &&
+          typeof args[0] === "string" &&
+          args[0].includes("cdn.tailwindcss.com")
+        )
+          return;
+        originalWarn.apply(console, args);
+      };
+    </script>
+
+    <!-- Bibliotecas Externas (Tailwind e Ícones) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+
+    <!-- SEU CSS PERSONALIZADO (Conecta com o arquivo style.css) -->
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body class="h-screen flex flex-col text-gray-700 overflow-hidden">
+    <!-- CABEÇALHO -->
+    <header
+      class="bg-gradient-to-r from-pink-500 to-rose-400 text-white p-4 shadow-lg shrink-0 z-20"
+    >
+      <div class="flex justify-between items-center">
+        <h1
+          class="text-2xl font-extrabold tracking-tight flex items-center gap-2"
+        >
+          <i class="fa-solid fa-basket-shopping"></i> Super Lista
+        </h1>
+        <div
+          id="header-total"
+          class="hidden text-xl font-bold bg-white/20 px-3 py-1 rounded-full"
+        >
+          R$ 0,00
+        </div>
+      </div>
+    </header>
+
+    <!-- ÁREA DE CONTEÚDO PRINCIPAL (Onde as telas aparecem) -->
+    <main
+      id="app-content"
+      class="flex-1 overflow-y-auto hide-scrollbar relative bg-gray-50 pb-24"
+    >
+      <!-- O conteúdo é injetado aqui pelo app.js -->
+    </main>
+
+    <!-- BOTÃO DE INSTALAR (PWA) -->
+    <div
+      id="install-btn-container"
+      class="fixed bottom-24 left-0 right-0 z-40 justify-center px-4 hidden"
+    >
+      <button
+        id="pwa-install-btn"
+        class="bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl font-bold flex items-center gap-3 w-full max-w-sm justify-center transform active:scale-95 transition-all border-2 border-white/20"
+      >
+        <i class="fa-solid fa-download"></i>
+        Instalar Aplicativo
+      </button>
+    </div>
+
+    <!-- MODAL INSTRUÇÕES IOS -->
+    <div
+      id="ios-install-modal"
+      class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-center"
+    >
+      <div class="bg-white w-full rounded-t-2xl p-6 pb-10 pop-in max-w-md">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-bold text-lg">Instalar no iPhone</h3>
+          <button onclick="closeIosModal()" class="text-gray-400">
+            <i class="fa-solid fa-xmark text-2xl"></i>
+          </button>
+        </div>
+        <div class="flex items-center gap-4 mb-4">
+          <p class="text-gray-600 flex-1">
+            Para instalar este app, toque no botão <strong>Compartilhar</strong>
+            <i class="fa-solid fa-arrow-up-from-bracket mx-1 text-blue-500"></i>
+            e depois em <strong>Adicionar à Tela de Início</strong>
+            <i class="fa-regular fa-square-plus mx-1"></i>.
+          </p>
+        </div>
+        <button
+          onclick="closeIosModal()"
+          class="w-full bg-pink-500 text-white py-3 rounded-xl font-bold"
+        >
+          Entendi
+        </button>
+      </div>
+    </div>
+
+    <!-- MENU INFERIOR (NAVEGAÇÃO) -->
+    <nav
+      class="bg-white border-t border-gray-200 flex justify-around items-center p-3 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] shrink-0 z-30"
+    >
+      <button
+        onclick="router('home')"
+        id="nav-home"
+        class="bottom-nav-item flex flex-col items-center gap-1 text-gray-400 w-1/4"
+      >
+        <i class="fa-solid fa-store text-2xl"></i>
+        <span class="text-xs font-semibold">Produtos</span>
+      </button>
+      <button
+        onclick="router('cart')"
+        id="nav-cart"
+        class="bottom-nav-item flex flex-col items-center gap-1 text-gray-400 w-1/4 relative"
+      >
+        <div class="relative">
+          <i class="fa-solid fa-cart-shopping text-2xl"></i>
+          <span
+            id="cart-badge"
+            class="hidden absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full border-2 border-white"
+            >0</span
+          >
+        </div>
+        <span class="text-xs font-semibold">Lista</span>
+      </button>
+      <button
+        onclick="router('history')"
+        id="nav-history"
+        class="bottom-nav-item flex flex-col items-center gap-1 text-gray-400 w-1/4"
+      >
+        <i class="fa-solid fa-clock-rotate-left text-2xl"></i>
+        <span class="text-xs font-semibold">Histórico</span>
+      </button>
+      <button
+        onclick="router('stats')"
+        id="nav-stats"
+        class="bottom-nav-item flex flex-col items-center gap-1 text-gray-400 w-1/4"
+      >
+        <i class="fa-solid fa-chart-pie text-2xl"></i>
+        <span class="text-xs font-semibold">Gastos</span>
+      </button>
+    </nav>
+
+    <!-- MODAL DE ADICIONAR PRODUTO -->
+    <div
+      id="add-modal"
+      class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4"
+    >
+      <div
+        class="bg-white rounded-2xl w-full max-w-sm p-6 shadow-2xl pop-in flex flex-col max-h-[90vh]"
+      >
+        <h2 class="text-xl font-bold text-pink-600 mb-4 text-center">
+          Novo Produto
+        </h2>
+
+        <div class="space-y-4 overflow-y-auto hide-scrollbar flex-1">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Nome do Produto</label
+            >
+            <input
+              type="text"
+              id="new-prod-name"
+              class="w-full border-2 border-pink-200 rounded-xl p-3 focus:outline-none focus:border-pink-500"
+              placeholder="Ex: Cerveja, Fralda..."
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Categoria</label
+            >
+            <select
+              id="new-prod-cat"
+              class="w-full border-2 border-pink-200 rounded-xl p-3 bg-white"
+            >
+              <option value="Despensa">Despensa</option>
+              <option value="Frios">Frios & Laticínios</option>
+              <option value="Hortifruti">Hortifruti</option>
+              <option value="Limpeza">Limpeza</option>
+              <option value="Higiene">Higiene Pessoal</option>
+              <option value="Bebidas">Bebidas</option>
+              <option value="Outros">Outros</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1"
+              >Escolha o Ícone</label
+            >
+            <div class="relative mb-2">
+              <i
+                class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-gray-400"
+              ></i>
+              <input
+                type="text"
+                id="emoji-search-input"
+                oninput="filterEmojis()"
+                class="w-full border border-gray-200 rounded-lg pl-9 p-2 text-sm focus:outline-none focus:border-pink-400 bg-gray-50"
+                placeholder="Pesquisar ícone (ex: desodorante)"
+              />
+            </div>
+            <div
+              id="emoji-grid"
+              class="grid grid-cols-6 gap-2 h-32 overflow-y-auto p-2 border border-gray-100 rounded-xl bg-gray-50"
+            >
+              <!-- Emojis renderizados via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div class="flex gap-3 mt-6 shrink-0">
+          <button
+            onclick="closeModal()"
+            class="flex-1 py-3 rounded-xl border border-gray-300 font-bold text-gray-500"
+          >
+            Cancelar
+          </button>
+          <button
+            onclick="saveNewProduct()"
+            class="flex-1 py-3 rounded-xl bg-pink-500 text-white font-bold shadow-lg shadow-pink-200"
+          >
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SEU SCRIPT JS (Conecta com o arquivo app.js) -->
+    <script src="app.js"></script>
+  </body>
+</html>
