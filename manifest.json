@@ -1,21 +1,25 @@
 {
   "name": "Super Lista da Dona",
   "short_name": "Super Lista",
+  "description": "Sua lista de compras inteligente e fácil.",
   "start_url": "./index.html",
+  "id": "/",
   "display": "standalone",
   "background_color": "#FFF5F7",
   "theme_color": "#EC4899",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3081/3081840.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
       "src": "https://cdn-icons-png.flaticon.com/512/3081/3081840.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }

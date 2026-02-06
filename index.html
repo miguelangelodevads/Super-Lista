@@ -13,14 +13,19 @@
     />
     <title>Super Lista da Dona</title>
 
-    <!-- Link para o Manifesto do PWA -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="apple-mobile-web-app-title" content="Super Lista" />
+
     <link rel="manifest" href="manifest.json" />
     <link
       rel="apple-touch-icon"
       href="https://cdn-icons-png.flaticon.com/512/3081/3081840.png"
     />
 
-    <!-- Script para silenciar o aviso de produção do Tailwind (Truque para limpar o console) -->
     <script>
       const originalWarn = console.warn;
       console.warn = (...args) => {
@@ -34,7 +39,6 @@
       };
     </script>
 
-    <!-- Bibliotecas Externas (Tailwind e Ícones) -->
     <script src="https://cdn.tailwindcss.com"></script>
     <link
       href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap"
@@ -45,11 +49,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
     />
 
-    <!-- SEU CSS PERSONALIZADO (Conecta com o arquivo style.css) -->
     <link rel="stylesheet" href="style.css" />
   </head>
   <body class="h-screen flex flex-col text-gray-700 overflow-hidden">
-    <!-- CABEÇALHO -->
     <header
       class="bg-gradient-to-r from-pink-500 to-rose-400 text-white p-4 shadow-lg shrink-0 z-20"
     >
@@ -68,15 +70,11 @@
       </div>
     </header>
 
-    <!-- ÁREA DE CONTEÚDO PRINCIPAL (Onde as telas aparecem) -->
     <main
       id="app-content"
       class="flex-1 overflow-y-auto hide-scrollbar relative bg-gray-50 pb-24"
-    >
-      <!-- O conteúdo é injetado aqui pelo app.js -->
-    </main>
+    ></main>
 
-    <!-- BOTÃO DE INSTALAR (PWA) -->
     <div
       id="install-btn-container"
       class="fixed bottom-24 left-0 right-0 z-40 justify-center px-4 hidden"
@@ -90,7 +88,6 @@
       </button>
     </div>
 
-    <!-- MODAL INSTRUÇÕES IOS -->
     <div
       id="ios-install-modal"
       class="fixed inset-0 bg-black/60 z-50 hidden flex items-end justify-center"
@@ -119,7 +116,6 @@
       </div>
     </div>
 
-    <!-- MENU INFERIOR (NAVEGAÇÃO) -->
     <nav
       class="bg-white border-t border-gray-200 flex justify-around items-center p-3 pb-6 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] shrink-0 z-30"
     >
@@ -164,7 +160,6 @@
       </button>
     </nav>
 
-    <!-- MODAL DE ADICIONAR PRODUTO -->
     <div
       id="add-modal"
       class="fixed inset-0 bg-black/50 z-50 hidden flex items-center justify-center p-4"
@@ -224,9 +219,7 @@
             <div
               id="emoji-grid"
               class="grid grid-cols-6 gap-2 h-32 overflow-y-auto p-2 border border-gray-100 rounded-xl bg-gray-50"
-            >
-              <!-- Emojis renderizados via JS -->
-            </div>
+            ></div>
           </div>
         </div>
 
@@ -247,7 +240,6 @@
       </div>
     </div>
 
-    <!-- SEU SCRIPT JS (Conecta com o arquivo app.js) -->
     <script src="app.js"></script>
   </body>
 </html>

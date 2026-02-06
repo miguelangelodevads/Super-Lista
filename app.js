@@ -2,7 +2,9 @@
 let deferredPrompt;
 const installBtnContainer = document.getElementById("install-btn-container");
 const installBtn = document.getElementById("pwa-install-btn");
+const iosModal = document.getElementById("ios-install-modal");
 
+// 1. Service Worker
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
@@ -12,13 +14,36 @@ if ("serviceWorker" in navigator) {
   });
 }
 
+// 2. Detecção de Modo Standalone (Já instalado) e iOS
+const isStandalone =
+  window.matchMedia("(display-mode: standalone)").matches ||
+  window.navigator.standalone;
+
+if (isStandalone) {
+  installBtnContainer.style.display = "none"; // Se já instalado, esconde botão
+} else {
+  // Se não instalado, verifica se é iPhone para mostrar botão manualmente
+  const isIos =
+    /iPhone|iPad|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if (isIos) {
+    installBtnContainer.classList.add("show");
+    // No iOS, o botão abre o modal de instruções
+    installBtn.addEventListener("click", () => {
+      iosModal.classList.remove("hidden");
+    });
+  }
+}
+
+// 3. Captura do Evento de Instalação (Android/Chrome/Edge)
 window.addEventListener("beforeinstallprompt", (e) => {
-  e.preventDefault();
+  e.preventDefault(); // Impede o Chrome de tentar instalar sozinho na hora errada
   deferredPrompt = e;
-  installBtnContainer.classList.add("show");
+  installBtnContainer.classList.add("show"); // Mostra nosso botão
 });
 
+// 4. Clique do Botão (Android)
 installBtn.addEventListener("click", async () => {
+  // Se tivermos o evento do Android capturado:
   if (deferredPrompt) {
     deferredPrompt.prompt();
     const { outcome } = await deferredPrompt.userChoice;
@@ -26,20 +51,12 @@ installBtn.addEventListener("click", async () => {
       deferredPrompt = null;
       installBtnContainer.classList.remove("show");
     }
-  } else {
-    const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
-    if (isIos) {
-      document.getElementById("ios-install-modal").classList.remove("hidden");
-    } else {
-      alert(
-        'Para instalar, procure a opção "Adicionar à Tela Inicial" no menu do seu navegador.',
-      );
-    }
   }
+  // O caso iOS já foi tratado no passo 2 com um Listener separado
 });
 
 function closeIosModal() {
-  document.getElementById("ios-install-modal").classList.add("hidden");
+  iosModal.classList.add("hidden");
 }
 
 window.addEventListener("appinstalled", () => {
