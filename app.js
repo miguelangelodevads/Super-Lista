@@ -3,7 +3,6 @@ let deferredPrompt;
 const installBtnContainer = document.getElementById("install-btn-container");
 const installBtn = document.getElementById("pwa-install-btn");
 
-// Tenta registrar o Service Worker
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker
@@ -13,7 +12,6 @@ if ("serviceWorker" in navigator) {
   });
 }
 
-// Lógica do Botão de Instalar
 window.addEventListener("beforeinstallprompt", (e) => {
   e.preventDefault();
   deferredPrompt = e;
@@ -29,7 +27,6 @@ installBtn.addEventListener("click", async () => {
       installBtnContainer.classList.remove("show");
     }
   } else {
-    // Fallback para iOS
     const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
     if (isIos) {
       document.getElementById("ios-install-modal").classList.remove("hidden");
@@ -53,16 +50,10 @@ window.addEventListener("appinstalled", () => {
 
 // --- LÓGICA PRINCIPAL DO APP ---
 
-// Estado temporário para seleção no modal
 let selectedNewEmoji = "🛒";
 
-// Base de dados de Emojis COMPLETA
 const emojiDatabase = [
-  // Higiene e Pessoal
-  {
-    icon: "🧴",
-    tags: "desodorante creme shampoo condicionador hidratante loção limpeza",
-  },
+  { icon: "🧴", tags: "desodorante creme shampoo condicionador hidratante loção limpeza" },
   { icon: "🧼", tags: "sabonete sabao banho limpeza maos" },
   { icon: "🪥", tags: "escova dente bucal higiene" },
   { icon: "🦷", tags: "pasta dente bucal" },
@@ -76,8 +67,6 @@ const emojiDatabase = [
   { icon: "💊", tags: "remedio farmacia comprimido" },
   { icon: "🩸", tags: "absorvente intimo menstruacao" },
   { icon: "🧵", tags: "fio dental costura" },
-
-  // Bebidas
   { icon: "🍺", tags: "cerveja bebida alcool bar lata" },
   { icon: "🍻", tags: "cerveja brinde bebida bar chopp" },
   { icon: "🍷", tags: "vinho bebida taça tinto" },
@@ -93,8 +82,6 @@ const emojiDatabase = [
   { icon: "🍹", tags: "drink tropical suco" },
   { icon: "💧", tags: "agua gota mineral galao" },
   { icon: "🥥", tags: "coco agua fruta" },
-
-  // Frutas e Vegetais
   { icon: "🍎", tags: "maca fruta vermelha" },
   { icon: "🍏", tags: "maca verde fruta" },
   { icon: "🍐", tags: "pera fruta" },
@@ -126,27 +113,23 @@ const emojiDatabase = [
   { icon: "🍄", tags: "cogumelo champignon fungo" },
   { icon: "🥜", tags: "amendoim castanha noz" },
   { icon: "🍅", tags: "tomate fruta salada molho" },
-
-  // Carnes e Proteínas
   { icon: "🥩", tags: "carne bife vermelho churrasco picanha" },
   { icon: "🍗", tags: "frango coxa carne assado" },
   { icon: "🍖", tags: "carne osso costela" },
   { icon: "🌭", tags: "salsicha cachorro quente hotdog" },
   { icon: "🍔", tags: "hamburguer carne lanche" },
-  { icon: "🥓", tags: "bacon carne frito" },
+  { icon: " Bacon", tags: "bacon carne frito" },
   { icon: "🍤", tags: "camarao fruto mar peixe" },
   { icon: "🐟", tags: "peixe carne mar" },
   { icon: "🍣", tags: "sushi peixe japones" },
   { icon: "🥚", tags: "ovo ovos duzia" },
-
-  // Padaria e Despensa
   { icon: "🍞", tags: "pao padaria cafe forma" },
   { icon: "🥐", tags: "croissant pao" },
   { icon: "🥖", tags: "pao baguete frances" },
   { icon: "🥨", tags: "pretzel pao salgado" },
   { icon: "🥯", tags: "bagel pao rosquinha" },
   { icon: "🥞", tags: "panqueca cafe" },
-  { icon: "🧇", tags: "waffle cafe" },
+  { icon: " waffle", tags: "waffle cafe" },
   { icon: "🧀", tags: "queijo laticinio mussarela" },
   { icon: "🧈", tags: "manteiga margarina" },
   { icon: "🍚", tags: "arroz comida grao" },
@@ -162,8 +145,6 @@ const emojiDatabase = [
   { icon: "🍯", tags: "mel doce pote" },
   { icon: "🫒", tags: "azeitona azeite oliva" },
   { icon: "🌻", tags: "oleo girassol azeite" },
-
-  // Doces
   { icon: "🍫", tags: "chocolate doce barra cacau" },
   { icon: "🍬", tags: "bala doce acucar" },
   { icon: "🍭", tags: "pirulito doce" },
@@ -176,10 +157,7 @@ const emojiDatabase = [
   { icon: "🧁", tags: "cupcake bolo doce" },
   { icon: "🥧", tags: "torta doce" },
   { icon: "🍮", tags: "pudim doce sobremesa" },
-  { icon: "🍯", tags: "mel doce" },
   { icon: "🍿", tags: "pipoca milho cinema" },
-
-  // Limpeza e Casa
   { icon: "🧹", tags: "vassoura limpeza casa varrer" },
   { icon: "🧺", tags: "roupa cesto lavar lavanderia" },
   { icon: "🧽", tags: "esponja limpeza louca banho" },
@@ -188,29 +166,22 @@ const emojiDatabase = [
   { icon: "🌡️", tags: "termometro febre remedio" },
   { icon: "🕯️", tags: "vela cheiro casa" },
   { icon: "💡", tags: "lampada luz casa" },
-  { icon: "🔦", tags: "lanterna luz pilha" },
+  { icon: " flashlight", tags: "lanterna luz pilha" },
   { icon: "🔋", tags: "pilha bateria energia" },
   { icon: "🔌", tags: "tomada eletrica extensao" },
   { icon: "🪴", tags: "planta vaso flor" },
   { icon: "💐", tags: "flores buque presente" },
-
-  // Bebê e Pets
   { icon: "🍼", tags: "bebe mamadeira leite" },
   { icon: "🧸", tags: "urso pelucia brinquedo crianca" },
   { icon: "👶", tags: "bebe fralda crianca" },
   { icon: "🐶", tags: "cachorro racao pet" },
   { icon: "🐱", tags: "gato racao pet" },
   { icon: "🦴", tags: "osso cachorro pet" },
-  { icon: "🐟", tags: "peixe racao aquario" },
-
-  // Utensílios
   { icon: "🥄", tags: "colher talher cozinha" },
   { icon: "🍴", tags: "garfo faca talher" },
   { icon: "🍽️", tags: "prato refeicao" },
   { icon: "🔪", tags: "faca corte cozinha" },
   { icon: "🥡", tags: "marmita comida caixa" },
-
-  // Genéricos
   { icon: "🛒", tags: "carrinho compras mercado" },
   { icon: "🛍️", tags: "sacola compras" },
   { icon: "🎁", tags: "presente caixa" },
@@ -222,7 +193,6 @@ const emojiDatabase = [
   { icon: "🧊", tags: "gelo agua gelada" },
 ];
 
-// Produtos Iniciais
 const defaultProducts = [
   { id: 1, name: "Arroz", cat: "Despensa", icon: "🍚" },
   { id: 2, name: "Feijão", cat: "Despensa", icon: "🫘" },
@@ -231,26 +201,22 @@ const defaultProducts = [
   { id: 5, name: "Açúcar", cat: "Despensa", icon: "🧂" },
   { id: 6, name: "Café", cat: "Despensa", icon: "☕" },
   { id: 7, name: "Pão", cat: "Despensa", icon: "🍞" },
-
   { id: 8, name: "Leite", cat: "Frios", icon: "🥛" },
   { id: 9, name: "Queijo", cat: "Frios", icon: "🧀" },
   { id: 10, name: "Manteiga", cat: "Frios", icon: "🧈" },
   { id: 11, name: "Iogurte", cat: "Frios", icon: "🥣" },
   { id: 12, name: "Presunto", cat: "Frios", icon: "🥓" },
-
   { id: 13, name: "Banana", cat: "Hortifruti", icon: "🍌" },
   { id: 14, name: "Maçã", cat: "Hortifruti", icon: "🍎" },
   { id: 15, name: "Alface", cat: "Hortifruti", icon: "🥬" },
   { id: 16, name: "Tomate", cat: "Hortifruti", icon: "🍅" },
   { id: 17, name: "Batata", cat: "Hortifruti", icon: "🥔" },
   { id: 18, name: "Cebola", cat: "Hortifruti", icon: "🧅" },
-
   { id: 19, name: "Sabão em Pó", cat: "Limpeza", icon: "🧼" },
   { id: 20, name: "Detergente", cat: "Limpeza", icon: "🧴" },
   { id: 21, name: "Papel Hig.", cat: "Limpeza", icon: "🧻" },
   { id: 22, name: "Desinfetante", cat: "Limpeza", icon: "✨" },
   { id: 23, name: "Esponja", cat: "Limpeza", icon: "🧽" },
-
   { id: 24, name: "Refrigerante", cat: "Bebidas", icon: "🥤" },
   { id: 25, name: "Suco", cat: "Bebidas", icon: "🧃" },
   { id: 26, name: "Água", cat: "Bebidas", icon: "💧" },
@@ -265,6 +231,7 @@ function init() {
   router("home");
   updateCartBadge();
 }
+
 function router(page) {
   const app = document.getElementById("app-content");
   const headerTotal = document.getElementById("header-total");
@@ -364,7 +331,33 @@ function renderCart(container) {
       const item = products.find((p) => p.id == id);
       const cartItem = cart[id];
       if (!item) return "";
-      return `<div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-center gap-3 ${cartItem.checked ? "opacity-60 bg-gray-50" : ""}"><div onclick="toggleCheck(${id})" class="w-10 h-10 rounded-full border-2 ${cartItem.checked ? "bg-green-500 border-green-500" : "border-gray-300"} flex items-center justify-center shrink-0 cursor-pointer transition-colors">${cartItem.checked ? '<i class="fa-solid fa-check text-white"></i>' : ""}</div><div class="flex-1"><div class="flex items-center gap-2"><span class="text-xl">${item.icon}</span><span class="font-bold ${cartItem.checked ? "line-through text-gray-400" : "text-gray-700"}">${item.name}</span></div><div class="flex items-center gap-3 mt-1 text-sm"><button onclick="changeQty(${id}, -1)" class="w-6 h-6 bg-gray-100 rounded text-gray-600 font-bold">-</button><span>${cartItem.qty} un</span><button onclick="changeQty(${id}, 1)" class="w-6 h-6 bg-gray-100 rounded text-gray-600 font-bold">+</button></div></div><div class="flex flex-col items-end"><span class="text-xs text-gray-400 mb-1">Preço un.</span><div class="relative w-24"><span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-sm">R$</span><input type="number" step="0.01" value="${cartItem.price > 0 ? cartItem.price : ""}" placeholder="0,00" onchange="updatePrice(${id}, this.value)" class="w-full pl-8 pr-2 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right font-bold focus:outline-none focus:border-pink-400 text-gray-700"></div></div></div>`;
+      return `
+      <div class="bg-white p-3 rounded-xl shadow-sm border border-gray-100 mb-3 flex items-center gap-3 ${cartItem.checked ? "opacity-60 bg-gray-50" : ""}">
+          <div onclick="toggleCheck(${id})" class="w-10 h-10 rounded-full border-2 ${cartItem.checked ? "bg-green-500 border-green-500" : "border-gray-300"} flex items-center justify-center shrink-0 cursor-pointer transition-colors">
+              ${cartItem.checked ? '<i class="fa-solid fa-check text-white"></i>' : ""}
+          </div>
+          <div class="flex-1">
+              <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                      <span class="text-xl">${item.icon}</span>
+                      <span class="font-bold ${cartItem.checked ? "line-through text-gray-400" : "text-gray-700"}">${item.name}</span>
+                  </div>
+                  <button onclick="removeFromCart(${id})" class="text-gray-300 hover:text-red-400 p-1"><i class="fa-solid fa-trash-can text-sm"></i></button>
+              </div>
+              <div class="flex items-center gap-3 mt-1 text-sm">
+                  <button onclick="changeQty(${id}, -1)" class="w-6 h-6 bg-gray-100 rounded text-gray-600 font-bold">-</button>
+                  <span>${cartItem.qty} un</span>
+                  <button onclick="changeQty(${id}, 1)" class="w-6 h-6 bg-gray-100 rounded text-gray-600 font-bold">+</button>
+              </div>
+          </div>
+          <div class="flex flex-col items-end">
+              <span class="text-xs text-gray-400 mb-1">Preço un.</span>
+              <div class="relative w-24">
+                  <span class="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500 text-sm">R$</span>
+                  <input type="number" step="0.01" value="${cartItem.price > 0 ? cartItem.price : ""}" placeholder="0,00" onchange="updatePrice(${id}, this.value)" class="w-full pl-8 pr-2 py-2 bg-gray-50 border border-gray-200 rounded-lg text-right font-bold focus:outline-none focus:border-pink-400 text-gray-700">
+              </div>
+          </div>
+      </div>`;
     })
     .join("");
   container.innerHTML = `<div class="p-4 pb-24"><div class="flex justify-between items-center mb-4"><h2 class="text-lg font-bold text-gray-700">🛒 No Carrinho</h2><button onclick="clearCart()" class="text-red-400 text-sm font-semibold">Limpar Tudo</button></div>${itemsHtml}<div class="mt-8 p-4 bg-white rounded-2xl shadow-lg border border-pink-100 text-center"><p class="text-gray-500 mb-2">Já pegou tudo?</p><button onclick="finishShopping()" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-4 rounded-xl text-lg shadow-lg shadow-green-200 transition-transform active:scale-95 flex justify-center items-center gap-2"><i class="fa-solid fa-check-double"></i> Finalizar Compra</button></div></div>`;
@@ -383,7 +376,22 @@ function renderHistory(container) {
         day: "numeric",
         month: "long",
       });
-      return `<div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-pink-400 mb-4 mx-4 mt-4"><div class="flex justify-between items-start mb-2"><div><h3 class="font-bold text-gray-800 capitalize">${date}</h3><p class="text-sm text-gray-500">${Object.keys(rec.items).length} itens</p></div><span class="font-bold text-green-600 text-lg">${rec.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span></div><div class="mt-3 border-t pt-3 flex justify-end"><button onclick="reuseList(${rec.id})" class="text-pink-500 font-bold text-sm flex items-center gap-1 hover:bg-pink-50 px-3 py-1 rounded-lg transition-colors"><i class="fa-solid fa-repeat"></i> Repetir lista</button></div></div>`;
+      return `
+      <div class="bg-white p-4 rounded-2xl shadow-sm border-l-4 border-pink-400 mb-4 mx-4 mt-4">
+          <div class="flex justify-between items-start mb-2">
+              <div>
+                  <h3 class="font-bold text-gray-800 capitalize">${date}</h3>
+                  <p class="text-sm text-gray-500">${Object.keys(rec.items).length} itens</p>
+              </div>
+              <div class="flex flex-col items-end gap-2">
+                  <span class="font-bold text-green-600 text-lg">${rec.total.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })}</span>
+                  <button onclick="deleteHistoryItem(${rec.id})" class="text-red-300 hover:text-red-500 text-xs"><i class="fa-solid fa-trash"></i> Excluir</button>
+              </div>
+          </div>
+          <div class="mt-3 border-t pt-3 flex justify-end">
+              <button onclick="reuseList(${rec.id})" class="text-pink-500 font-bold text-sm flex items-center gap-1 hover:bg-pink-50 px-3 py-1 rounded-lg transition-colors"><i class="fa-solid fa-repeat"></i> Repetir lista</button>
+          </div>
+      </div>`;
     })
     .join("");
   container.innerHTML =
@@ -411,6 +419,7 @@ function filterCategory(cat) {
   currentFilter = cat;
   renderHome(document.getElementById("app-content"));
 }
+
 function toggleCart(id) {
   if (cart[id]) delete cart[id];
   else cart[id] = { qty: 1, checked: false, price: 0 };
@@ -418,11 +427,13 @@ function toggleCart(id) {
   renderProductGrid();
   updateCartBadge();
 }
+
 function toggleCheck(id) {
   cart[id].checked = !cart[id].checked;
   saveData();
   renderCart(document.getElementById("app-content"));
 }
+
 function changeQty(id, delta) {
   const newQty = cart[id].qty + delta;
   if (newQty > 0) {
@@ -431,11 +442,13 @@ function changeQty(id, delta) {
     renderCart(document.getElementById("app-content"));
   }
 }
+
 function updatePrice(id, val) {
   cart[id].price = parseFloat(val);
   saveData();
   updateTotalHeader();
 }
+
 function updateTotalHeader() {
   let total = 0;
   Object.values(cart).forEach((item) => {
@@ -446,6 +459,7 @@ function updateTotalHeader() {
     { style: "currency", currency: "BRL" },
   );
 }
+
 function clearCart() {
   if (confirm("Tem certeza que quer limpar sua lista?")) {
     cart = {};
@@ -454,6 +468,7 @@ function clearCart() {
     router("home");
   }
 }
+
 function finishShopping() {
   const total = Object.values(cart).reduce(
     (acc, item) => acc + (item.price || 0) * item.qty,
@@ -475,6 +490,7 @@ function finishShopping() {
   );
   router("history");
 }
+
 function reuseList(histId) {
   const record = history.find((h) => h.id === histId);
   if (!record) return;
@@ -492,6 +508,7 @@ function reuseList(histId) {
   updateCartBadge();
   router("cart");
 }
+
 function updateCartBadge() {
   const count = Object.keys(cart).length;
   const badge = document.getElementById("cart-badge");
@@ -499,21 +516,25 @@ function updateCartBadge() {
   if (count > 0) badge.classList.remove("hidden");
   else badge.classList.add("hidden");
 }
+
 function saveData() {
   localStorage.setItem("products", JSON.stringify(products));
   localStorage.setItem("cart", JSON.stringify(cart));
   localStorage.setItem("history", JSON.stringify(history));
 }
+
 function openModal() {
   document.getElementById("add-modal").classList.remove("hidden");
   document.getElementById("emoji-search-input").value = "";
   filterEmojis();
 }
+
 function closeModal() {
   document.getElementById("add-modal").classList.add("hidden");
   document.getElementById("new-prod-name").value = "";
   selectedNewEmoji = "🛒";
 }
+
 function selectNewEmoji(btn, emoji) {
   document.querySelectorAll(".emoji-opt").forEach((b) => {
     b.classList.remove("bg-pink-200", "border-pink-300");
@@ -560,6 +581,25 @@ function saveNewProduct() {
   closeModal();
   renderProductGrid();
   alert("Produto adicionado! 🎉");
+}
+
+// --- NOVAS FUNÇÕES DE EXCLUSÃO ---
+
+function removeFromCart(id) {
+    if(confirm("Remover este item do carrinho?")) {
+        delete cart[id];
+        saveData();
+        renderCart(document.getElementById("app-content"));
+        updateCartBadge();
+    }
+}
+
+function deleteHistoryItem(histId) {
+    if(confirm("Tem certeza que deseja apagar este registro do histórico? Isso não pode ser desfeito.")) {
+        history = history.filter(h => h.id !== histId);
+        saveData();
+        renderHistory(document.getElementById("app-content"));
+    }
 }
 
 init();
